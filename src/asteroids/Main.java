@@ -16,6 +16,7 @@ public class Main extends PApplet {
 	// game objects
 	Player player;
 	ArrayList<Asteroid> asteroids;
+	ArrayList<Bullet> bullets;
 	
 	// constants
 	public final int MAX_NUM_ASTEROIDS = 10;
@@ -32,6 +33,7 @@ public class Main extends PApplet {
 	public void setup() {
 		// make player
 		player = new Player(this);
+		bullets = new ArrayList<Bullet>();
 		
 		// start with maximum number of asteroids
 		asteroids = new ArrayList<Asteroid>(MAX_NUM_ASTEROIDS);
@@ -47,8 +49,9 @@ public class Main extends PApplet {
 		// move and draw player
 		player.move();
 		player.draw();
+		
 		for (Asteroid a : asteroids) {
-			// check for collision with player
+			// game over if touching player
 			if (player.isTouching(a)) {
 				gameOver();
 			}
@@ -56,6 +59,24 @@ public class Main extends PApplet {
 			a.move();
 			a.draw();
 		}
+		
+		// fire bullet if space bar pressed
+		if (keyPressed && key == ' ') {
+			Bullet newBullet = new Bullet(this, player.x, player.y, player.direction);
+			bullets.add(newBullet);
+		}
+		for (Bullet b : bullets) {
+			
+			// check if touching an asteroid
+			Asteroid collision = b.findCollision(asteroids);
+			if (collision != null) {
+				asteroids.remove(collision);
+			}
+			
+			b.move();
+			b.draw();
+		}
+		
 	}
 	
 	private void gameOver() {
