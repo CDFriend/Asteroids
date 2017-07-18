@@ -19,8 +19,12 @@ public class Main extends PApplet {
 	ArrayList<Bullet> bullets;
 	int score;
 	
+	// system time last bullet was fired
+	long lastBulletTime;
+	
 	// constants
 	public final int MAX_NUM_ASTEROIDS = 10;
+	public final long MIN_TIME_BETWEEN_BULLETS_MS = 120;
 
 	// game entry point
 	public static void main(String[] args) {
@@ -64,7 +68,12 @@ public class Main extends PApplet {
 		}
 		
 		// fire bullet if space bar pressed
-		if (keyPressed && key == ' ') {
+		if (keyPressed && key == ' ' && 
+				System.currentTimeMillis() > lastBulletTime + MIN_TIME_BETWEEN_BULLETS_MS) {
+			
+			// set last bullet fired time
+			lastBulletTime = System.currentTimeMillis();
+			
 			Bullet newBullet = new Bullet(this, player.x, player.y, player.direction);
 			bullets.add(newBullet);
 		}

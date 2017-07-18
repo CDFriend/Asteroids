@@ -12,7 +12,7 @@ public class Bullet {
 	
 	private PApplet app;
 	
-	private final float BULLET_SPEED = 7;
+	private final float BULLET_SPEED = 4;
 	
 	public Bullet(PApplet pApp, float x, float y, float direction) {
 		app = pApp;
