@@ -17,6 +17,7 @@ public class Main extends PApplet {
 	Player player;
 	ArrayList<Asteroid> asteroids;
 	ArrayList<Bullet> bullets;
+	int score;
 	
 	// constants
 	public final int MAX_NUM_ASTEROIDS = 10;
@@ -40,6 +41,8 @@ public class Main extends PApplet {
 		for (int i = 0; i < MAX_NUM_ASTEROIDS; i++) {
 			spawnAsteroid();
 		}
+		
+		score = 0;
 	}
 	
 	public void draw() {
@@ -65,17 +68,24 @@ public class Main extends PApplet {
 			Bullet newBullet = new Bullet(this, player.x, player.y, player.direction);
 			bullets.add(newBullet);
 		}
+		
+		// update bullets
 		for (Bullet b : bullets) {
 			
 			// check if touching an asteroid
 			Asteroid collision = b.findCollision(asteroids);
 			if (collision != null) {
+				score += 1;
 				asteroids.remove(collision);
 			}
 			
 			b.move();
 			b.draw();
 		}
+		
+		// draw score
+		fill(255);
+		text(String.format("Score: %d", score), 0, 20);
 		
 	}
 	
