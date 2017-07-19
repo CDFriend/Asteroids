@@ -22,6 +22,8 @@ public class Main extends PApplet {
 	// system time last bullet was fired
 	long lastBulletTime;
 	
+	private boolean isGameOver;
+	
 	// constants
 	public final int MAX_NUM_ASTEROIDS = 10;
 	public final long MIN_TIME_BETWEEN_BULLETS_MS = 120;
@@ -47,53 +49,89 @@ public class Main extends PApplet {
 		}
 		
 		score = 0;
+		
+		isGameOver = false;
 	}
 	
 	public void draw() {
-		// erase old frame
+		
+		// erase last frame
 		background(0);
 		
-		// if there are less than the maximum number of asteroids, add more!
-		for (int i = 0; i < MAX_NUM_ASTEROIDS - asteroids.size(); i++) {
-			spawnAsteroid();
+		if (isGameOver == true) {
+			// draw game over screen and wait for ENTER to be pressed
+			drawGameOver();
+			if (keyCode == ENTER) {
+				setup();
+			}
 		}
-		
-		// move and draw player
-		player.move();
-		player.draw();
-		
-		// fire bullet if space bar pressed
-		if (keyPressed && key == ' ' && 
-				System.currentTimeMillis() > lastBulletTime + MIN_TIME_BETWEEN_BULLETS_MS) {
+		else {
+			// if there are less than the maximum number of asteroids, add more!
+			for (int i = 0; i < MAX_NUM_ASTEROIDS - asteroids.size(); i++) {
+				spawnAsteroid();
+			}
 			
-			// set last bullet fired time
-			lastBulletTime = System.currentTimeMillis();
+			// move and draw player
+			player.move();
+			player.draw();
 			
-			Bullet newBullet = new Bullet(this, player.x, player.y, player.direction);
-			bullets.add(newBullet);
+			// fire bullet if space bar pressed
+			if (keyPressed && key == ' ' && 
+					System.currentTimeMillis() > lastBulletTime + MIN_TIME_BETWEEN_BULLETS_MS) {
+				
+				// set last bullet fired time
+				lastBulletTime = System.currentTimeMillis();
+				
+				Bullet newBullet = new Bullet(this, player.x, player.y, player.direction);
+				bullets.add(newBullet);
+			}
+			
+			// move and draw asteroids and bullets
+			for (Asteroid a : asteroids) {
+				a.move();
+				a.draw();
+			}
+			for (Bullet b : bullets) {
+				b.move();
+				b.draw();
+			}
+			
+			// clean up any destroyed/lost asteroids and bullets
+			cleanUpFrame();
+			
+			// draw score
+			fill(255);
+			textAlign(LEFT, CENTER);
+			textSize(15);
+			text(String.format("Score: %d", score), 10, 15);
+			
+			// if asteroid is touching player, game over
+			for (Asteroid a : asteroids) {
+				if (player.isTouching(a)) {
+					isGameOver = true;
+					break;
+				}
+			}
 		}
-		
-		// move and draw asteroids and bullets
-		for (Asteroid a : asteroids) {
-			a.move();
-			a.draw();
-		}
-		for (Bullet b : bullets) {
-			b.move();
-			b.draw();
-		}
-		
-		// clean up any destroyed/lost asteroids and bullets
-		cleanUpFrame();
-		
-		// draw score
-		fill(255);
-		text(String.format("Score: %d", score), 0, 20);
-		
 	}
 	
-	private void gameOver() {
-		System.out.println("Game over!");
+	// Prints game over and score. Waits for player to press ENTER and restart the
+	// game.
+	private void drawGameOver() {
+		background(0);
+		
+		// Print "Game Over!"
+		fill(255);
+		textSize(32);
+		textAlign(CENTER, CENTER);
+		text("Game Over!", width / 2, height / 2 - 15);
+		
+		// print score
+		textSize(18);
+		text(String.format("Score: %d", score), width / 2, height / 2 + 20);
+		
+		// wait for ENTER to be pressed
+		text("Press ENTER to restart", width / 2, height - 35);
 	}
 	
 	// creates a new asteroid in a random location
