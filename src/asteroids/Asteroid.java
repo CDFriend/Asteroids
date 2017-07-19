@@ -37,4 +37,14 @@ public class Asteroid {
 		app.ellipse(x, y, 15, 15);
 	}
 	
+	public boolean isOutsideFrame() {
+		if (x > app.width + this.width || x < -this.width
+				|| y > app.height + this.height || y < -this.width) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 }

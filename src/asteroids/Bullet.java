@@ -53,5 +53,14 @@ public class Bullet {
 			return false;
 		}
 	}
+	
+	public boolean isOutsideFrame() {
+		if (x > app.width || x < 0 || y > app.height || y < 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
 }

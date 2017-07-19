@@ -57,16 +57,6 @@ public class Main extends PApplet {
 		player.move();
 		player.draw();
 		
-		for (Asteroid a : asteroids) {
-			// game over if touching player
-			if (player.isTouching(a)) {
-				gameOver();
-			}
-			
-			a.move();
-			a.draw();
-		}
-		
 		// fire bullet if space bar pressed
 		if (keyPressed && key == ' ' && 
 				System.currentTimeMillis() > lastBulletTime + MIN_TIME_BETWEEN_BULLETS_MS) {
@@ -78,19 +68,18 @@ public class Main extends PApplet {
 			bullets.add(newBullet);
 		}
 		
-		// update bullets
+		// move and draw asteroids and bullets
+		for (Asteroid a : asteroids) {
+			a.move();
+			a.draw();
+		}
 		for (Bullet b : bullets) {
-			
-			// check if touching an asteroid
-			Asteroid collision = b.findCollision(asteroids);
-			if (collision != null) {
-				score += 1;
-				asteroids.remove(collision);
-			}
-			
 			b.move();
 			b.draw();
 		}
+		
+		// clean up any destroyed/lost asteroids and bullets
+		cleanUpFrame();
 		
 		// draw score
 		fill(255);
@@ -111,6 +100,44 @@ public class Main extends PApplet {
 		
 		Asteroid newAsteroid = new Asteroid(this, x, y, direction, speed);
 		asteroids.add(newAsteroid);
+	}
+	
+	private void cleanUpFrame() {
+		// make two lists of asteroids and bullets to remove
+		ArrayList<Asteroid> asteroidsToRemove = new ArrayList<Asteroid>(MAX_NUM_ASTEROIDS);
+		ArrayList<Bullet> bulletsToRemove = new ArrayList<Bullet>();
+		
+		// are there any bullets outside the frame?
+		for (Bullet b : bullets) {
+			if (b.isOutsideFrame()) {
+				bulletsToRemove.add(b);
+			}
+		}
+		
+		// are there any asteroids outside the frame?
+		for (Asteroid a : asteroids) {
+			if (a.isOutsideFrame()) {
+				asteroidsToRemove.add(a);
+			}
+		}
+		
+		// has a bullet hit an asteroid?
+		for (Asteroid a : asteroids) {
+			for (Bullet b : bullets) {
+				if (b.isTouching(a)) {
+					asteroidsToRemove.add(a);
+					bulletsToRemove.add(b);
+				}
+			}
+		}
+		
+		// remove all of the asteroids and bullets we found from the game
+		for (Asteroid a : asteroidsToRemove) {
+			asteroids.remove(a);
+		}
+		for (Bullet b : bulletsToRemove) {
+			bullets.remove(b);
+		}
 	}
 	
 }
