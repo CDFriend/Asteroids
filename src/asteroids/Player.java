@@ -81,7 +81,8 @@ public class Player {
 		
 	}
 	
-	// draws the spaceship on the screen
+	// Rotates the grid to the proper direction, then calls makeSpaceshipGraphic()
+	// to draw the space ship on the screen.
 	public void draw() {
 		app.rectMode(PConstants.CENTER);
 		
@@ -93,12 +94,23 @@ public class Player {
 		app.rotate(PApplet.radians(direction));
 		
 		// draw spaceship
-		app.rect(0, 0, 15, 15);
+		makeSpaceshipGraphic(0, 0, 20, 20);
 		
 		// restore original coordinate system
 		app.popMatrix();
 	}
 	
+	// Draws a space ship on the screen
+	private void makeSpaceshipGraphic(float x, float y, float width, float height) {
+		app.beginShape();
+		app.vertex(x, y - height / 2); // front
+		app.vertex(x + width / 2, y + height / 2); // right wing
+		app.vertex(x, y + height / 4); // back
+		app.vertex(x - width / 2, y + height / 2); // left wing
+		app.endShape();
+	}
+	
+	// Determines whether or not the spaceship is touching an asteroid. 
 	public boolean isTouching(Asteroid a) {
 		if (a.x >= x && a.x <= x + width && a.y >= y && a.y <= y + height) {
 			return true;
