@@ -53,6 +53,11 @@ public class Main extends PApplet {
 		// erase old frame
 		background(0);
 		
+		// if there are less than the maximum number of asteroids, add more!
+		for (int i = 0; i < MAX_NUM_ASTEROIDS - asteroids.size(); i++) {
+			spawnAsteroid();
+		}
+		
 		// move and draw player
 		player.move();
 		player.draw();
@@ -125,6 +130,7 @@ public class Main extends PApplet {
 		for (Asteroid a : asteroids) {
 			for (Bullet b : bullets) {
 				if (b.isTouching(a)) {
+					score += 1;
 					asteroidsToRemove.add(a);
 					bulletsToRemove.add(b);
 				}
